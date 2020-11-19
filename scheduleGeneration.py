@@ -5,6 +5,7 @@ import sys
 import numpy as np
 import math
 import os
+from datetime import timedelta
 
 # This script takes a CSV file of a satellite track from the data structures created in MATLAB - located at /LEVEL5/sched_data.scan.stat.epoch.
 # The CSV file is then converted into a format readable by the sattrk software on the Hobart 26m telescope.
@@ -64,10 +65,10 @@ def main(input_file, exp_code):
         block_list = sorted(os.listdir(cwd + '/'+exp_code+'_blocks')) # read block schedule subdirectory
         for i in range(0, len(block_list)):
             if (i % 2) == 0: # if even track normally
-                print('if [ $currenttime -le $(date -d ' + str(scan_times[i]) + ' +%s) ]',file=f)
+                print('if [ $currenttime -le $(date -d ' + str(scan_times[i]+ timedelta(seconds=30)) + ' +%s) ]',file=f) # extra 30s is to account for the few seconds it takes for previous sattrk scan to finish
                 print('then\n    sattrk -b -d 1/xs -i ' + block_list[i] + ' sys26m\nfi\n', file=f)
             else: # if odd track with offset
-                print('if [ $currenttime -le $(date -d ' + str(scan_times[i]) + ' +%s) ]',file=f)
+                print('if [ $currenttime -le $(date -d ' + str(scan_times[i]+ timedelta(seconds=30)) + ' +%s) ]',file=f) # extra 30s is to account for the few seconds it takes for previous sattrk scan to finish
                 print('then\n    sattrk -b -d 1/xs -x 2 -i ' + block_list[i] + ' sys26m\nfi\n', file=f) 
     print('Done!')
     # Write out the start times of each 5 min block - for use with spectrum analyser recording
