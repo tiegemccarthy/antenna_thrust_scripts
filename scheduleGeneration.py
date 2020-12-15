@@ -48,7 +48,7 @@ def main(input_file, exp_code):
             os.mkdir(cwd + '/' + exp_code+'_blocks') # create if it does not
         for line in file_read: # iterate through each line of master schedule file
             jd_time = float(line[5:21]) # extract JD time value
-            scan_index = max(np.where((jd_time/scantime_array) >= 1)[0]) # determine the scan that the given time will fall on
+            scan_index = max(np.where((round(jd_time,8)/np.around(scantime_array, 8)) >= 1.0)[0]) # determine the scan that the given time will fall on - rounding required because of floating point rounding errors
             block_file_name = exp_code + '_b' + str(scan_index+1).zfill(3) + '.out' # determine the name of that scan's file
             with open(cwd + '/' + exp_code+'_blocks/' + block_file_name , 'a') as file_write: # write the data to the relevant file
                 print(str.rstrip(line), file=file_write) # strip \n before printing
