@@ -58,18 +58,18 @@ def main(input_file, exp_code):
     if os.path.exists(cwd + '/'+exp_code+ '_wrapper.sh'):
         os.remove(cwd + '/'+exp_code+ '_wrapper.sh')
     scan_times = Time(scantime_array, format='jd', scale='utc')
-    scan_times.format = 'isot'
+    scan_times.format = 'iso'
     with open(cwd + '/'+exp_code+ '_wrapper.sh', 'w') as f:
         print('#!/bin/bash\n', file=f) # append shebang to shell scripts
         print('currenttime=$(date +%s)\n', file=f) 
         block_list = sorted(os.listdir(cwd + '/'+exp_code+'_blocks')) # read block schedule subdirectory
         for i in range(0, len(block_list)):
             if (i % 2) == 0: # if even track normally
-                print('if [ $currenttime -le $(date -d ' + str(scan_times[i]+ timedelta(seconds=30)) + ' +%s) ]',file=f) # extra 30s is to account for the few seconds it takes for previous sattrk scan to finish
-                print('then\n    sattrk -b -d 1/xs -i ' + block_list[i] + ' sys26m\nfi\n', file=f)
+                print("if [ $currenttime -le $(date --date='" + str(scan_times[i]+ timedelta(seconds=30)) + " UTC' +%s) ]",file=f) # extra 30s is to account for the few seconds it takes for previous sattrk scan to finish
+                print("then\n    sattrk -b -d 1/xs -i " + block_list[i] + " sys26m\nfi\n", file=f)
             else: # if odd track with offset
-                print('if [ $currenttime -le $(date -d ' + str(scan_times[i]+ timedelta(seconds=30)) + ' +%s) ]',file=f) # extra 30s is to account for the few seconds it takes for previous sattrk scan to finish
-                print('then\n    sattrk -b -d 1/xs -x 2 -i ' + block_list[i] + ' sys26m\nfi\n', file=f) 
+                print("if [ $currenttime -le $(date --date='" + str(scan_times[i]+ timedelta(seconds=30)) + " UTC' +%s) ]",file=f) # extra 30s is to account for the few seconds it takes for previous sattrk scan to finish
+                print("then\n    sattrk -b -d 1/xs -x 2 -i " + block_list[i] + " sys26m\nfi\n", file=f) 
     print('Done!')
     # Write out the start times of each 5 min block - for use with spectrum analyser recording
     print('Writing out schedule block start times.')
