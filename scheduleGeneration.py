@@ -69,7 +69,7 @@ def main(input_file, exp_code):
                 print("then\n    sattrk -b -d 1/xs -i " + block_list[i] + " sys26m\nfi\n", file=f)
             else: # if odd track with offset
                 print("if [ $currenttime -le $(date --date='" + str(scan_times[i]+ timedelta(seconds=30)) + " UTC' +%s) ]",file=f) # extra 30s is to account for the few seconds it takes for previous sattrk scan to finish
-                print("then\n    sattrk -b -d 1/xs -x 2 -i " + block_list[i] + " sys26m\nfi\n", file=f) 
+                print("then\n    sattrk -b -d 1/xs -x 3 -i " + block_list[i] + " sys26m\nfi\n", file=f) 
     print('Done!')
     # Write out the start times of each 5 min block - for use with spectrum analyser recording
     print('Writing out schedule block start times.')
