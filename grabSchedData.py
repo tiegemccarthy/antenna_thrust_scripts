@@ -5,6 +5,7 @@ import scipy.io
 import sys
 
 # This script grabs the current az/el schedule information from the VieVS temp files in the LEVEL5 data directory
+# It should be fed one command line argument - which should be the sub-directory for the  MATLAB sched_data structure (typically the experiment code)
 
 def extractSchedData(matfile):
     mat = scipy.io.loadmat(matfile)
@@ -18,13 +19,14 @@ def extractSchedData(matfile):
         dec = epoch_mat[i][2][0][0]
         az = epoch_mat[i][3][0][0]
         el = epoch_mat[i][4][0][0]
-        data.append([mjd, ra, dec, az, el])
+        rang = epoch_mat[i][5][0][0]
+        data.append([mjd, ra, dec, az, el, rang])
     return data, sat_name
     
 def outputCSV(exp_code, list_list, sat_name):
     outfile_name = exp_code + '.csv'
     with open(outfile_name, 'w') as f:
-        print('# ' + exp_code + ' - ' + sat_name + 'jd, ra, dec, un_az, el', file=f)
+        print('# ' + exp_code + ' - ' + sat_name + 'jd, ra, dec, un_az, el, range', file=f)
         for line in list_list:
             print(*line, sep = ', ', file=f)
             
