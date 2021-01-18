@@ -25,7 +25,7 @@ cwd = os.getcwd()
 def main(input_file, exp_code):
     exp_code = str(exp_code)
     # Load data from CSV file
-    data = ascii.read(input_file)
+    data = ascii.read(input_file, format='csv', comment='#', header_start=0)
     # Convert data into desired form
     az_deg = data['un_az']*180*(1/np.pi)
     el_deg = data['el']*180*(1/np.pi)
