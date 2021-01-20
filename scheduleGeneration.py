@@ -22,6 +22,19 @@ from datetime import timedelta
 
 cwd = os.getcwd()
 
+def scanAvgElRange(data_table, scantimes):
+    scan_avg_el = []
+    scan_avg_range = []
+    for time in scantimes:
+        mid_scan_offset = 0.002246944 # offset to midpoint of scan (90s settle time + 210/2) in day fraction
+        offset_time = time + mid_scan_offset
+        # Need to match this offset time to a elevation and range from the original CSV data
+        time_diff = abs(data_table['jd'] - offset_time)
+        min_diff_index = list(time_diff).index(min(time_diff))
+        scan_avg_el.append(data_table['el'][min_diff_index])
+        scan_avg_range.append(data_table['range'][min_diff_index])
+    return scan_avg_el, scan_avg_range
+    
 def main(input_file, exp_code):
     exp_code = str(exp_code)
     # Load data from CSV file
@@ -29,6 +42,7 @@ def main(input_file, exp_code):
     # Convert data into desired form
     az_deg = data['un_az']*180*(1/np.pi)
     el_deg = data['el']*180*(1/np.pi)
+    rang = data['range']
     jd = data['jd']
     # Generate master schedule file
     print('Creating master schedule file.')
@@ -36,7 +50,7 @@ def main(input_file, exp_code):
         for i in range(0, len(data)):
             print("JD : " + format(jd[i], '.8f') + " ; Az : " + format(az_deg[i], '.3f') + " ; El : " + format(el_deg[i], '.3f') + " ; Rn :    0.0 ", file=f)
     print('Done!')
-    # Now generate block schedule
+    # Now generate block schedules
     print('Generating schedule blocks.')
     interval = 0.00347 # 5 minutes in fraction of day
     start_time = jd[0]
@@ -71,13 +85,14 @@ def main(input_file, exp_code):
                 print("if [ $currenttime -le $(date --date='" + str(scan_times[i]+ timedelta(seconds=30)) + " UTC' +%s) ]",file=f) # extra 30s is to account for the few seconds it takes for previous sattrk scan to finish
                 print("then\n    sattrk -b -d 1/xs -x 3 -i " + block_list[i] + " sys26m\nfi\n", file=f) 
     print('Done!')
-    # Write out the start times of each 5 min block - for use with spectrum analyser recording
+    # Write out the scan information of each 5 min block - for use with spectrum analyser recording and data reduction
+    avg_el_list, avg_range_list = scanAvgElRange(data, scantime_array)
     print('Writing out schedule block start times.')
-    if os.path.exists(cwd + '/'+exp_code+ '_scantimes.out'):
-        os.remove(cwd + '/'+exp_code+ '_scantimes.out')
-    with open(cwd + '/'+exp_code+ '_scantimes.out','w') as f:
-        for element in scantime_array:
-            print(element, file=f)
+    if os.path.exists(cwd + '/'+exp_code+ '_scaninfo.out'):
+        os.remove(cwd + '/'+exp_code+ '_scaninfo.out')
+    with open(cwd + '/'+exp_code+ '_scaninfo.out','w') as f:
+        for i in range(0, len(scantime_array)):
+            print(scantime_array[i], avg_el_list[i], avg_range_list[i], file=f)
     print('Done!')
     
 if __name__ == '__main__':

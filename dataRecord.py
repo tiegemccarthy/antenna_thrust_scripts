@@ -37,10 +37,10 @@ def writeOut(spectra_list, scan_time_list, on_off, current_scan_element):
     
 
 def main(scantime_file):
-    # load in the scantime_file output by the schedule generator
+    # load in the scaninfo file output by the schedule generator
     print("Loading scan time file.")
     with open(scantime_file, 'r') as f:
-        time_data = [float(line.strip()) for line in f]
+        time_data = [float(line.split()[0]) for line in f]
     scan_times = Time(time_data, format='jd', scale='utc')
     onoff_array = (np.arange(0, len(time_data)) % 2) # used for labelling on/off source files
     # make frequency range axis for output - assuming 1 GHz range (from 1.1 to 2.1 GHz) and 501 sweep points
