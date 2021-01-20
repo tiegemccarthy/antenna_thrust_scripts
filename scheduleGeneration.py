@@ -16,7 +16,7 @@ from datetime import timedelta
 #       <experiment_code>_master.out - sattrk readable schedule for the whole track.
 #       <experiment_code>_blocks/<experiment_code>_bXXX.out - directory containing a series of 5 minute schedule blocks used to alternate between 'onsource' and offset tracks of the satellite.
 #       <experiment_code>_wrapper.sh - shell script wrapper to feed alternating scheudle blocks into sattrk software with offsets on every other scan.
-#       <experiment_code>_scantimes.out - text file with julian date start times for each 5 minute schedule block - this is required by the spectrum analyser recording script.
+#       <experiment_code>_scaninfo.out - text file with julian date start times, average elevation and average range for each 5 minute schedule block - this is required by the spectrum analyser recording script and is useful for analysis.
 # Example:
 #       ./scheduleGeneration.py azel.csv at0001
 
