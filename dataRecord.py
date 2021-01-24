@@ -14,15 +14,18 @@ cwd = os.getcwd()
 def spectrumGrab():
     s=socket.socket()
     s.connect(('131.217.63.179', 5025))
-    s.send(b'FREQ:SPAN 1GHZ\rn\n')
+    s.send(b'FREQ:SPAN 999MHZ\rn\n')
     s.send(b'FREQ:CENT 505MHZ\r\n')
+    s.send(b'SWE:POIN 333\r\n')
     s.send(b'TRAC? TRACE2\r\n')
     time.sleep(0.5)
     a=s.recv(16384)
-    a_list = a.decode("utf-8").split(',')
-    try:
-        float_list = [float(point) for point in a_list]
-    except: # this handles the rare instance when a trace is not correctly received from the spectrum analyser
+    if len(a) == 5994: # will need to change this if you change number of sweep points! Test the expected length then update script - stops incomplete scans getting appended.
+        try:
+            float_list = [float(point) for point in a_list]
+        except: # this handles the rare instance when a trace is not correctly received from the spectrum analyser
+            float_list = ''
+    else:
         float_list = ''
     return float_list 
     
