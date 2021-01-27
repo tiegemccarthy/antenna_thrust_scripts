@@ -18,9 +18,10 @@ def spectrumGrab():
     s.send(b'FREQ:CENT 505MHZ\r\n')
     s.send(b'SWE:POIN 333\r\n')
     s.send(b'TRAC? TRACE2\r\n')
-    time.sleep(0.5)
+    time.sleep(0.8)
     a=s.recv(16384)
     if len(a) == 5994: # will need to change this if you change number of sweep points! Test the expected length then update script - stops incomplete scans getting appended.
+        a_list = a.decode("utf-8").split(',')
         try:
             float_list = [float(point) for point in a_list]
         except: # this handles the rare instance when a trace is not correctly received from the spectrum analyser
@@ -47,7 +48,7 @@ def main(scantime_file):
     scan_times = Time(time_data, format='jd', scale='utc')
     onoff_array = (np.arange(0, len(time_data)) % 2) # used for labelling on/off source files
     # make frequency range axis for output - assuming 1 GHz range (from 1.1 to 2.1 GHz) and 501 sweep points
-    x_inc = 1000.0/501.0
+    x_inc = 999.0/333.0
     freq_range = np.arange(1100,2100,x_inc)
     # start the recording
     print("Starting recording loop.")
@@ -61,7 +62,7 @@ def main(scantime_file):
                     #    open(cwd + '/' + str(scan_times[i]) + '.txt', 'a').close()
                     spectrum = spectrumGrab() # grab the spectrum at this time
                     spec_list.append(spectrum) # append it to the list containing all spectra for this current scan
-                    time.sleep(0.5)
+                    time.sleep(0.2)
                     current_scan = i # this is used for writing out the data between scans
                     break    
                 elif i == len(scan_times)-2 and len(spec_list) > 0: # if spectrum data exists and the iterator maxes out then we are between scans - here we write out the data to a file
