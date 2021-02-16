@@ -13,7 +13,9 @@ output_file = str(input('Enter name for output text file: '))
 def spectrumGrab(RBW_byte, VBW_byte):
     s=socket.socket()
     s.connect(('131.217.63.179', 5025))
-    s.send(b'FREQ:SPAN 1GHZ\rn\n')
+    s.send(b'FREQ:SPAN 999MHZ\rn\n')
+    s.send(b'SWE:POIN 333\r\n')
+    s.send
     s.send(b'BAND:RES ' + RBW_byte + b'; VID ' + VBW_byte + b'\rn\n')
     time.sleep(0.5)
     s.send(b'FREQ:CENT 505MHZ\r\n')
