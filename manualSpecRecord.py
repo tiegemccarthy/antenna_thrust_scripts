@@ -1,5 +1,10 @@
 #!/usr/bin/python
 
+# Small script used to manually record spectra to a text file from the spectrum analyser on-site at Mt Pleasant.
+# spectrumGrab function should be the same as for the 'automatic' recording script - if you need to change spectrum analyser settings, change them in this function.
+# spectrum analyzer should be semi-permanently attached to the L-band signal chain.
+
+## IMPORT ##
 import sys
 import os
 import socket
