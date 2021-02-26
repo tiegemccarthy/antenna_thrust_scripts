@@ -22,9 +22,15 @@ def spectrumGrab(RBW_byte, VBW_byte):
     s.send(b'TRAC? TRACE2\r\n')
     time.sleep(0.5)
     a=s.recv(16384)
-    a_list = a.decode("utf-8").split(',')
-    float_list = [float(point) for point in a_list]
-    return float_list 
+    if len(a) == 5994: # will need to change this if you change number of sweep points! Test the expected length then update script - stops incomplete scans getting appended.
+        a_list = a.decode("utf-8").split(',')
+        try:
+            float_list = [float(point) for point in a_list]
+        except: # this handles the rare instance when a trace is not correctly received from the spectrum analyser
+            float_list = ''
+    else:
+        float_list = ''
+    return float_list     
     
 def main(max_time, filename):
     start_time = time.time()
