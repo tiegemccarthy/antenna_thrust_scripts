@@ -32,7 +32,11 @@ def spectrumGrab():
     
 def writeOut(spectra_list, scan_time_list, on_off, current_scan_element):
     spec_array = np.array(spectra_list) # covert list of lists to a X by Y array
-    np.savetxt(cwd + '/' + str(scan_time_list[current_scan_element]) + '.txt', spec_array, header='Scan start time: ' + str(scan_time_list[current_scan_element]) + ' jd', delimiter=",", fmt='%s')
+    if on_off[current_scan_element] == 0:
+        scan_suffix = "_on"
+    else:
+        scan_suffix = "_off"
+    np.savetxt(cwd + '/' + str(scan_time_list[current_scan_element]) + scan_suffix + '.txt', spec_array, header='Scan start time: ' + str(scan_time_list[current_scan_element]) + ' jd', delimiter=",", fmt='%s')
     print("File for scan " + str(scan_time_list[current_scan_element]) + " written out.")   
     
 
@@ -42,6 +46,7 @@ def main(scantime_file):
     with open(scantime_file, 'r') as f:
         time_data = [float(line.split()[0]) for line in f]
     scan_times = Time(time_data, format='jd', scale='utc')
+    onoff_array = (np.arange(0, len(time_data)) % 2) # used for labelling on/off source files
     # make frequency range axis for output - assuming 1 GHz range (from 1.1 to 2.1 GHz) and 501 sweep points
     x_inc = 999.0/333.0
     freq_range = np.arange(1100,2100,x_inc)
@@ -61,14 +66,14 @@ def main(scantime_file):
                     current_scan = i # this is used for writing out the data between scans
                     break    
                 elif i == len(scan_times)-2 and len(spec_list) > 0: # if spectrum data exists and the iterator maxes out then we are between scans - here we write out the data to a file
-                    writeOut(spec_list, scan_times, current_scan)
+                    writeOut(spec_list, scan_times, onoff_array, current_scan)
                     spec_list = []
                 else:
                     continue                
     except KeyboardInterrupt:
         if len(spec_list) > 0:
             print('Interrupted - writing out currently recorded spectra.')
-            writeOut(spec_list, scan_times, current_scan)
+            writeOut(spec_list, scan_times, onoff_array, current_scan)
             spec_list = []
     else:
         print('Interrupted')
