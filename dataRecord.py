@@ -52,7 +52,7 @@ def main(scantime_file):
         while True:
             currenttime = Time(datetime.utcnow()) # grab current UTC time
             for i in range(0, len(scan_times)-1): 
-                if scan_times[i+1] > currenttime > (scan_times[i] + timedelta(seconds =90)): # check whether current time falls within 90s of the start of any scan and the end of that same scan
+                if scan_times[i+1] > currenttime > (scan_times[i] + timedelta(seconds=5)): # check whether current time falls within 90s of the start of any scan and the end of that same scan
                     #if not os.path.exists(cwd + '/' + str(scan_times[i]) + '.dat'): # create a data file for this scan if it doesn't already exist
                     #    open(cwd + '/' + str(scan_times[i]) + '.txt', 'a').close()
                     spectrum = spectrumGrab() # grab the spectrum at this time
